@@ -363,6 +363,132 @@ section[data-testid="stSidebar"] .stTextArea label {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+:root {
+    --z-bg: #000000;
+    --z-panel: #111111;
+    --z-border: #252525;
+    --z-text: #f8f8f8;
+    --z-muted: #d7c0c3;
+    --z-red: #ef3348;
+}
+html, body, [class*="css"] { font-family: 'Inter', sans-serif; letter-spacing: 0; }
+.stApp { background: var(--z-bg); color: var(--z-text); }
+.block-container { max-width: 1120px; padding: 1.35rem 2rem 3rem; }
+[data-testid="stAppViewContainer"] > .main { border-left: 1px solid #151515; }
+section[data-testid="stSidebar"] {
+    background: #050505;
+    border-right: 1px solid #171717;
+    min-width: 270px !important;
+    max-width: 270px !important;
+}
+section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1.25rem 2rem; }
+section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
+section[data-testid="stSidebar"] .stSelectbox label,
+section[data-testid="stSidebar"] .stMultiSelect label,
+section[data-testid="stSidebar"] .stSlider label,
+section[data-testid="stSidebar"] .stRadio label,
+section[data-testid="stSidebar"] .stTextArea label {
+    color: #cdb4b8 !important;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.top-nav {
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #171717;
+    margin: -0.35rem 0 2.2rem;
+    padding-bottom: 0.85rem;
+}
+.brand { font-size: 1.05rem; font-weight: 800; color: #fff; }
+.brand span { color: var(--z-red); }
+.nav-links { display: flex; align-items: center; gap: 1.65rem; color: #ad9094; font-size: 0.78rem; font-weight: 700; }
+.nav-links .active { color: #fff; border-bottom: 2px solid var(--z-red); padding-bottom: 0.35rem; }
+.nav-icons { display: flex; gap: 1.5rem; color: #d9bdc1; font-size: 1rem; }
+.hero-header { text-align: center; padding: 0.2rem 1rem 2rem; }
+.hero-header h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #fff;
+    background: none;
+    -webkit-text-fill-color: #fff;
+    margin: 0;
+    line-height: 1.1;
+}
+.hero-header .hero-icon { color: var(--z-red); margin-right: 0.65rem; }
+.hero-header p { color: var(--z-muted); font-size: 1rem; margin: 0.95rem auto 0; max-width: 660px; line-height: 1.45; }
+.section-divider { background: #171717; }
+.stats-row { gap: 1.4rem; margin: 0.7rem 0 2.2rem; }
+.stat-card { background: var(--z-panel); border: 1px solid var(--z-border); border-radius: 8px; padding: 1.55rem 1.2rem; }
+.stat-card .stat-value { color: #fff; background: none; -webkit-text-fill-color: #fff; font-size: 2rem; }
+.stat-card .stat-label { color: var(--z-muted); font-size: 0.63rem; letter-spacing: 0.18em; }
+.status-banner,
+.summary-block { background: #151515; border: 1px solid var(--z-border); border-left: 4px solid var(--z-red); border-radius: 8px; color: #ead4d7; }
+.status-banner.relaxed { border-left-color: #37c871; color: #d0edda; }
+.summary-block { padding: 1.15rem 1.4rem; }
+.summary-block strong { color: #fff; display: block; margin-bottom: 0.35rem; }
+.stSelectbox > div > div,
+.stMultiSelect > div > div,
+.stTextInput > div > div > input,
+.stRadio div[role="radiogroup"] { background: #1d1d1d !important; border-color: #2b2b2b !important; border-radius: 3px !important; }
+.stMultiSelect [data-baseweb="tag"] { background: #2a1619 !important; border: 1px solid #6d2630 !important; }
+.stTextArea textarea { background: #1d1d1d !important; border-color: #2b2b2b !important; border-radius: 3px !important; color: #fff !important; }
+.stButton > button { min-height: 3rem; background: var(--z-red); border-radius: 3px; }
+.stSlider [data-testid="stTickBar"] { display: none; }
+.results-title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1rem 0 1.8rem; }
+.results-title h2 { color: #fff; font-size: 1.35rem; margin: 0; }
+.results-title span { color: var(--z-muted); font-size: 0.76rem; font-style: italic; }
+.rec-card { background: var(--z-panel); border: 1px solid var(--z-border); border-radius: 8px; margin-bottom: 1.55rem; overflow: hidden; position: relative; }
+.rec-card::before { display: none; }
+.rec-card:hover { border-color: #3b3b3b; transform: none; }
+.rec-feature { display: grid; grid-template-columns: minmax(230px, 34%) 1fr; }
+.food-visual {
+    min-height: 260px;
+    position: relative;
+    background:
+        radial-gradient(circle at 58% 58%, rgba(239,51,72,0.30), transparent 0 12%, transparent 13%),
+        radial-gradient(circle at 45% 62%, rgba(244,190,88,0.45), transparent 0 10%, transparent 11%),
+        radial-gradient(circle at 50% 58%, #111 0 28%, transparent 29%),
+        linear-gradient(135deg, #091014 0%, #173538 52%, #081012 100%);
+}
+.food-visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.58)); }
+.rec-body { padding: 1.85rem 1.9rem 1.7rem; }
+.rank-badge { width: 3.05rem; height: 2.45rem; border-radius: 4px; font-size: 1.2rem; background: var(--z-red); color: #fff; border: 1px solid rgba(255,255,255,0.12); position: absolute; left: 1rem; top: 1rem; z-index: 1; }
+.rank-2, .rank-3, .rank-other { background: #202727; color: #fff; }
+.card-name-row { align-items: flex-start; gap: 1rem; margin-bottom: 0.65rem; }
+.card-name { font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1.15; }
+.card-locality { color: var(--z-muted); margin-top: 0.45rem; }
+.rating-badge { padding: 0.55rem 0.75rem; border-radius: 0; background: #191919; color: #fff; border: 1px solid #363636; }
+.rating-high, .rating-mid, .rating-low { color: #fff; }
+.chips-row { gap: 0.55rem; margin: 1.05rem 0; }
+.chip { border-radius: 3px; background: #241c1d; color: #f2d9dc; border: 1px solid #3a2c2f; font-weight: 700; }
+.cost-pill { border-radius: 3px; background: #1c1718; color: #f0d8db; border: 1px solid #302628; padding: 0.55rem 0.75rem; }
+.ai-reasoning { background: #070707; border-left: 3px solid var(--z-red); border-radius: 0; color: #e5cfd2; margin-top: 1.35rem; }
+.ai-label { color: var(--z-red); font-size: 0.66rem; font-style: normal; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.6rem; }
+.compact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.35rem; margin-top: 1.75rem; }
+.rec-compact { padding: 1.65rem; min-height: 180px; }
+.rec-compact .rank-badge { position: static; width: 2.15rem; height: 2.15rem; font-size: 0.85rem; }
+.compact-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.4rem; }
+.compact-name { color: #fff; font-size: 1.05rem; font-weight: 800; margin-bottom: 0.65rem; }
+.compact-cuisine { color: var(--z-muted); font-size: 0.78rem; }
+.compact-link { color: var(--z-red); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; margin-top: 1.35rem; text-transform: uppercase; }
+@media (max-width: 900px) {
+    .rec-feature { grid-template-columns: 1fr; }
+    .food-visual { min-height: 190px; }
+    .stats-row, .compact-grid { grid-template-columns: 1fr; }
+    .top-nav { align-items: flex-start; height: auto; gap: 1rem; }
+    .nav-links { gap: 1rem; }
+    .nav-icons { display: none; }
+    .hero-header h1 { font-size: 2rem; }
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 # ── Cached Resource Loaders ───────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Loading restaurant database...")
@@ -429,21 +555,21 @@ def filter_locations(locations: list[str], query: str) -> list[str]:
 def build_skeleton_loader_html(count: int = 3, message: str = "Generating recommendations...") -> str:
     cards = []
     for _ in range(count):
-        cards.append("""
-        <div class="skeleton-card">
-            <div class="skeleton-line title"></div>
-            <div class="skeleton-line subtitle"></div>
-            <div class="skeleton-line short"></div>
-            <div class="skeleton-line reasoning"></div>
-        </div>
-        """)
-    return f"""
-    <div class="skeleton-spinner-row">
-        <div class="skeleton-spinner"></div>
-        <span>{message}</span>
-    </div>
-    {''.join(cards)}
-    """
+        cards.append(
+            '<div class="skeleton-card">'
+            '<div class="skeleton-line title"></div>'
+            '<div class="skeleton-line subtitle"></div>'
+            '<div class="skeleton-line short"></div>'
+            '<div class="skeleton-line reasoning"></div>'
+            '</div>'
+        )
+    return (
+        '<div class="skeleton-spinner-row">'
+        '<div class="skeleton-spinner"></div>'
+        f'<span>{message}</span>'
+        '</div>'
+        f'{"".join(cards)}'
+    )
 
 
 def build_relaxation_banner_html(result: RetrievalResult) -> str:
@@ -465,7 +591,7 @@ def build_relaxation_banner_html(result: RetrievalResult) -> str:
     """
 
 
-def build_card_html(rec: dict, rank: int) -> str:
+def _legacy_build_card_html(rec: dict, rank: int) -> str:
     r_class = rank_class(rank)
     rating = rec.get("aggregate_rating", 0)
     r_badge_class = rating_class(rating)
@@ -499,6 +625,45 @@ def build_card_html(rec: dict, rank: int) -> str:
 
 
 # ── Recommendation Card Renderer ──────────────────────────────────────────────
+# Override the original card markup with the screenshot-inspired split layout.
+def build_card_html(rec: dict, rank: int) -> str:
+    r_class = rank_class(rank)
+    rating = rec.get("aggregate_rating", 0)
+    r_badge_class = rating_class(rating)
+    cost = rec.get("average_cost_for_two", 0)
+    cuisines = [c.strip() for c in rec.get("cuisines", "").split(",")][:4]
+    chips_html = "".join(f'<span class="chip">{c}</span>' for c in cuisines if c)
+
+    return f"""
+    <div class="rec-card rec-feature">
+        <div class="food-visual">
+            <span class="rank-badge {r_class}">#{rank}</span>
+        </div>
+        <div class="rec-body">
+            <div class="card-name-row">
+                <div>
+                    <div class="card-name">{rec.get('name', 'Restaurant')}</div>
+                    <div class="card-locality">&#9906; {rec.get('locality', '')}, {rec.get('city', '')}</div>
+                </div>
+                <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+                    <span class="rating-badge {r_badge_class}">{rating:.1f} <span style="font-size:0.72rem;">/5.0</span></span>
+                    <span style="font-size:0.66rem; color:#d4bdc0; font-weight:800; letter-spacing:0.08em;">{rec.get('votes', 0):,} REVIEWS</span>
+                </div>
+            </div>
+            <div class="chips-row">{chips_html}</div>
+            <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; margin-top:0.2rem;">
+                <span class="cost-pill">₹{int(cost):,} for two</span>
+                <span class="cost-pill">{budget_label(cost)}</span>
+            </div>
+            <div class="ai-reasoning">
+                <div class="ai-label">AI Insight</div>
+                {rec.get('reasoning', '')}
+            </div>
+        </div>
+    </div>
+    """
+
+
 def render_card(rec: dict, rank: int):
     st.markdown(build_card_html(rec, rank), unsafe_allow_html=True)
 
@@ -510,11 +675,22 @@ def main():
     ai_label = provider_display_name(connector.provider)
 
     st.markdown(f"""
-    <div class="hero-header">
-        <h1>🍽️ Zomato AI Recommender</h1>
-        <p>Personalised restaurant recommendations powered by {ai_label} & real Zomato data</p>
+    <div class="top-nav">
+        <div class="brand">Zomato <span>AI</span></div>
+        <div class="nav-links">
+            <span class="active">Discover</span>
+            <span>Favorites</span>
+            <span>History</span>
+        </div>
+        <div class="nav-icons">
+            <span>&#9825;</span>
+            <span>&#9678;</span>
+        </div>
     </div>
-    <hr class="section-divider">
+    <div class="hero-header">
+        <h1><span class="hero-icon">&#127860;</span>Zomato AI Recommender</h1>
+        <p>Personalised restaurant recommendations powered by {ai_label} & real Zomato data for your discerning palate.</p>
+    </div>
     """, unsafe_allow_html=True)
 
     # Load resources
@@ -542,7 +718,7 @@ def main():
             <div class="stat-label">Cuisine Types</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">{avg_rating:.1f}⭐</div>
+            <div class="stat-value">{avg_rating:.1f} <span style="color:#ef3348;">&#9733;</span></div>
             <div class="stat-label">Avg Dataset Rating</div>
         </div>
     </div>
@@ -552,25 +728,19 @@ def main():
     with st.sidebar:
         st.markdown("""
         <div style="text-align:center; padding: 1rem 0 0.5rem;">
-            <div style="font-size:1.8rem;">🔍</div>
-            <div style="font-size:1rem; font-weight:700; color:#fff; margin-top:0.3rem;">Search Preferences</div>
-            <div style="font-size:0.75rem; color:rgba(255,255,255,0.35); margin-top:0.2rem;">
-                Tell us what you're looking for
+            <div style="font-size:1.35rem; color:#ef3348;">&#9881;</div>
+            <div style="font-size:1.35rem; font-weight:800; color:#fff; margin-top:0.55rem;">Search Preferences</div>
+            <div style="font-size:0.75rem; color:#d7c0c3; margin-top:0.2rem;">
+                Personalize your palate
             </div>
         </div>
-        <hr style="border-color:rgba(255,255,255,0.08); margin: 0.8rem 0;">
+        <hr style="border-color:#171717; margin: 1.35rem 0;">
         """, unsafe_allow_html=True)
 
-        # Location search + selector (autocomplete-style filter)
-        location_search = st.text_input(
-            "🔎 Search location",
-            placeholder="Type to filter neighbourhoods...",
-            key="location_search",
-        )
-        filtered_locations = filter_locations(locations, location_search)
+        # Location selector
         location = st.selectbox(
-            "📍 Location",
-            options=[""] + filtered_locations,
+            "Location",
+            options=[""] + locations,
             format_func=lambda x: "Select a neighbourhood..." if x == "" else x,
             key="location_select",
         )
@@ -684,21 +854,17 @@ def main():
 
     # Results header
     st.markdown(f"""
-    <div style="margin-bottom:1rem;">
-        <span style="font-size:1.35rem; font-weight:700; color:#fff;">
-            🎯 Top {len(recommendations)} Picks for "{location}"
-        </span>
-        <span style="font-size:0.8rem; color:rgba(255,255,255,0.35); margin-left:0.8rem;">
-            filtered from {len(candidates)} candidates
-        </span>
+    <div class="results-title">
+        <h2>&#128293; Top {len(recommendations)} Picks for "{location}"</h2>
+        <span>Filtered from {len(candidates)} candidates</span>
     </div>
     """, unsafe_allow_html=True)
 
     # AI Summary
     if summary:
-        st.markdown(f'<div class="summary-block">💬 <strong>AI Summary:</strong> {summary}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="summary-block"><strong>AI Summary</strong>{summary}</div>', unsafe_allow_html=True)
 
-    # Render recommendation cards
+    # Render complete recommendation cards
     for rec in recommendations:
         render_card(rec, rec.get("rank", 1))
 
