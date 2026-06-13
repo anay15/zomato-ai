@@ -24,8 +24,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 st.set_page_config(
-    page_title="Zomato AI | Smart Restaurant Recommendations",
-    page_icon="🍽️",
+    page_title="ForkFinder — AI Restaurant Recommendations",
+    page_icon="🍴",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -574,7 +574,7 @@ def main():
     # ── Brand row ─────────────────────────────────────────────────────────────
     st.markdown(f"""
     <div class="top-brand">
-        <div class="brand">Zomato <span>AI</span></div>
+        <div class="brand">Fork<span>Finder</span></div>
         <div class="nav-icons"><span>&#9825;</span><span>&#9678;</span></div>
     </div>
     """, unsafe_allow_html=True)
@@ -641,8 +641,8 @@ def main():
         n_cuisines = len(cuisines_list)
         st.markdown(f"""
         <div class="hero-header">
-            <h1><span class="hero-icon">🍽️</span>Zomato AI Recommender</h1>
-            <p>Personalised restaurant recommendations powered by {ai_label} &amp; real Zomato data.</p>
+            <h1><span class="hero-icon">🍴</span>ForkFinder</h1>
+            <p>Tell us what you're craving — ForkFinder uses {ai_label} &amp; real Zomato data to find your perfect table.</p>
         </div>
         <div class="stats-row">
             <div class="stat-card">
@@ -756,7 +756,7 @@ def main():
             st.markdown(f"""
             <hr class="section-divider">
             <div style="text-align:center; color:rgba(255,255,255,0.2); font-size:0.75rem; padding-bottom:2rem;">
-                Powered by {ai_label} • Data from Zomato • Built with Streamlit
+                ForkFinder • Powered by {ai_label} • Built with Streamlit
             </div>
             """, unsafe_allow_html=True)
 

@@ -1,6 +1,6 @@
 ---
-title: Zomato AI Recommender
-emoji: 🍽️
+title: ForkFinder
+emoji: 🍴
 colorFrom: red
 colorTo: orange
 sdk: streamlit
@@ -9,10 +9,10 @@ app_file: src/app.py
 pinned: false
 ---
 
-# Zomato AI — Smart Restaurant Recommendations
+# ForkFinder — Find Your Perfect Table with AI
 
-AI-powered restaurant recommendation system built on real Zomato data.
+Tell us what you're craving and ForkFinder does the rest. Powered by LLMs and real Zomato data, it ranks restaurants that actually match your mood, location and budget — not just keyword hits.
 
-- 🔍 Search by location, cuisine, budget and rating
-- 🤖 LLM-ranked results with AI reasoning (Groq / Gemini / OpenAI)
-- ❤️ Save favourites and revisit search history
+- 🔍 Natural-language search by location, cuisine, budget and vibe
+- 🤖 AI-ranked results with plain-English reasoning (Groq / Gemini / OpenAI)
+- ❤️ Save favourites and revisit your full search history
