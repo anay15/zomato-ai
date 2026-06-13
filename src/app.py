@@ -15,6 +15,7 @@ import sys
 import json
 import logging
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 from pathlib import Path
 
@@ -42,275 +43,279 @@ st.set_page_config(
 # ── Premium CSS Styling ───────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* ── Import Google Font ── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* ── Import Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
-/* ── Global Reset ── */
-html, body, [class*="css"] {
+/* ── Typography and Global Smoothing ── */
+:root {
+    --z-bg: #000000;
+    --z-panel: #111111;
+    --z-border: #252525;
+    --z-text: #F8FAFC;       /* Off-white tint */
+    --z-muted: #94A3B8;      /* Slate/gray */
+    --z-red: #ef3348;
+}
+
+html, body, p, label, input, select, textarea, .stApp {
     font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+.top-nav, .brand, .nav-links, .hero-header p, .stat-value, .stat-label, .results-title span, .rec-card, .rank-badge, .card-name, .card-locality, .rating-badge, .chip, .cost-pill, .ai-reasoning, .ai-label, .summary-block {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .hero-header h1, .results-title h2, .brand {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.stApp {
+    background: var(--z-bg);
+    color: var(--z-text);
+}
+
+.block-container {
+    max-width: 1120px;
+    padding: 1.35rem 2rem 3rem;
 }
 
 /* ── Hide Streamlit Branding ── */
 #MainMenu, footer, header { visibility: hidden; }
 
-/* ── App Background ── */
-.stApp {
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    min-height: 100vh;
-}
-
-/* ── Sidebar ── */
+/* ── Sidebar styling ── */
+[data-testid="stAppViewContainer"] > .main { border-left: 1px solid #151515; }
 section[data-testid="stSidebar"] {
-    background: rgba(255,255,255,0.04);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(20px);
+    background: #050505;
+    border-right: 1px solid #171717;
+    min-width: 280px !important;
+    max-width: 280px !important;
 }
-section[data-testid="stSidebar"] * { color: #e8e8f0 !important; }
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] .stMultiSelect label,
-section[data-testid="stSidebar"] .stSlider label,
-section[data-testid="stSidebar"] .stTextArea label { 
-    color: #a0a0c0 !important;
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
+section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1rem 2rem; }
+section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
 
-/* ── Main Header ── */
-.hero-header {
-    text-align: center;
-    padding: 2.5rem 1rem 1.5rem;
-}
-.hero-header h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0;
-    line-height: 1.2;
-}
-.hero-header p {
-    color: rgba(255,255,255,0.55);
-    font-size: 1rem;
-    margin-top: 0.5rem;
-}
-
-/* ── Section Divider ── */
-.section-divider {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-    margin: 1.5rem 0;
-}
-
-/* ── Status Banner ── */
-.status-banner {
-    background: rgba(255, 193, 7, 0.10);
-    border: 1px solid rgba(255, 193, 7, 0.30);
-    border-radius: 10px;
-    padding: 0.75rem 1.2rem;
-    color: #ffd93d;
-    font-size: 0.85rem;
-    margin-bottom: 1.5rem;
+/* ── Top Navigation Bar ── */
+.top-nav {
+    height: 46px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    border-bottom: 1px solid #171717;
+    margin: -0.35rem 0 2.2rem;
+    padding-bottom: 0.85rem;
+}
+.brand { font-size: 1.05rem; font-weight: 800; color: #fff; }
+.brand span { color: var(--z-red); }
+.nav-links { display: flex; align-items: center; gap: 1.65rem; color: var(--z-muted); font-size: 0.78rem; font-weight: 700; }
+.nav-links .active { color: #fff; border-bottom: 2px solid var(--z-red); padding-bottom: 0.35rem; }
+.nav-icons { display: flex; gap: 1.5rem; color: var(--z-muted); font-size: 1rem; }
+
+/* ── Hero Header ── */
+.hero-header { text-align: center; padding: 0.2rem 1rem 2rem; }
+.hero-header h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    line-height: 1.1;
+}
+.hero-header .hero-icon { color: var(--z-red); margin-right: 0.65rem; }
+.hero-header p { color: var(--z-muted); font-size: 1rem; margin: 0.95rem auto 0; max-width: 660px; line-height: 1.45; }
+
+.section-divider { background: #171717; height: 1px; border: none; margin: 1.5rem 0; }
+
+/* ── Metric Stats Row ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+    margin: 0.7rem 0 2.2rem;
+}
+.stat-card {
+    background: var(--z-panel);
+    border: 1px solid var(--z-border);
+    border-radius: 8px;
+    padding: 1.55rem 1.2rem;
+    text-align: center;
+}
+.stat-card .stat-value {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+}
+.stat-card .stat-label {
+    color: var(--z-muted);
+    font-size: 0.63rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+}
+
+/* ── Status Banner / AI Summary ── */
+.status-banner,
+.summary-block {
+    background: #151515;
+    border: 1px solid var(--z-border);
+    border-left: 4px solid var(--z-red);
+    border-radius: 8px;
+    color: #ead4d7;
+    padding: 1.15rem 1.4rem;
+    margin-bottom: 1.8rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 .status-banner.relaxed {
-    background: rgba(107, 203, 119, 0.10);
-    border-color: rgba(107, 203, 119, 0.30);
-    color: #6bcb77;
+    border-left-color: #37c871;
+    color: #d0edda;
+}
+.summary-block strong {
+    color: #fff;
+    display: block;
+    margin-bottom: 0.35rem;
 }
 
-/* ── Recommendation Card ── */
+/* ── Results Title ── */
+.results-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0 1.8rem;
+}
+.results-title h2 { color: #fff; font-size: 1.35rem; margin: 0; }
+.results-title span { color: var(--z-muted); font-size: 0.76rem; font-style: italic; }
+
+/* ── Recommendation Cards (Split layout) ── */
 .rec-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.09);
-    border-radius: 16px;
-    padding: 1.5rem 1.6rem;
-    margin-bottom: 1.2rem;
-    backdrop-filter: blur(12px);
-    transition: border-color 0.3s ease, transform 0.2s ease;
-    position: relative;
+    background: var(--z-panel);
+    border: 1px solid var(--z-border);
+    border-radius: 8px;
+    margin-bottom: 1.55rem;
     overflow: hidden;
+    position: relative;
 }
-.rec-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4d96ff);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.rec-card:hover::before { opacity: 1; }
 .rec-card:hover {
-    border-color: rgba(255,255,255,0.2);
-    transform: translateY(-2px);
+    border-color: #3b3b3b;
 }
-
-/* ── Card Rank Badge ── */
+.rec-feature {
+    display: grid;
+    grid-template-columns: minmax(230px, 34%) 1fr;
+}
+.food-visual {
+    min-height: 260px;
+    position: relative;
+    background:
+        radial-gradient(circle at 58% 58%, rgba(239,51,72,0.30), transparent 0 12%, transparent 13%),
+        radial-gradient(circle at 45% 62%, rgba(244,190,88,0.45), transparent 0 10%, transparent 11%),
+        radial-gradient(circle at 50% 58%, #111 0 28%, transparent 29%),
+        linear-gradient(135deg, #091014 0%, #173538 52%, #081012 100%);
+}
+.food-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.58));
+}
+.rec-body {
+    padding: 1.85rem 1.9rem 1.7rem;
+}
 .rank-badge {
+    width: 3.05rem;
+    height: 2.45rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    font-weight: 800;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem; height: 2rem;
-    border-radius: 50%;
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-right: 0.8rem;
-    flex-shrink: 0;
+    background: var(--z-red);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.12);
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 1;
 }
-.rank-1 { background: linear-gradient(135deg, #ffd700, #ffa500); color: #1a1a2e; }
-.rank-2 { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); color: #1a1a2e; }
-.rank-3 { background: linear-gradient(135deg, #cd7f32, #b8651a); color: #fff; }
-.rank-other { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
-
-/* ── Card Name Row ── */
+.rank-2, .rank-3, .rank-other {
+    background: #202727;
+    color: #fff;
+}
 .card-name-row {
     display: flex;
-    align-items: center;
-    margin-bottom: 0.8rem;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
 }
 .card-name {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #ffffff;
-    flex: 1;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
 }
 .card-locality {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.45);
-    margin-top: 0.1rem;
+    color: var(--z-muted);
+    font-size: 0.85rem;
+    margin-top: 0.45rem;
 }
-
-/* ── Rating Badge ── */
 .rating-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 20px;
+    padding: 0.55rem 0.75rem;
+    background: #191919;
+    color: #fff;
+    border: 1px solid #363636;
     font-size: 0.82rem;
     font-weight: 700;
     white-space: nowrap;
 }
-.rating-high { background: rgba(107,203,119,0.18); color: #6bcb77; border: 1px solid rgba(107,203,119,0.35); }
-.rating-mid  { background: rgba(255,193,7,0.18);   color: #ffd93d; border: 1px solid rgba(255,193,7,0.35); }
-.rating-low  { background: rgba(255,107,107,0.18); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.35); }
-
-/* ── Chips ── */
-.chips-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.7rem 0; }
+.chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 1.05rem 0;
+}
 .chip {
     padding: 0.2rem 0.65rem;
-    border-radius: 20px;
+    border-radius: 3px;
+    background: #241c1d;
+    color: #f2d9dc;
+    border: 1px solid #3a2c2f;
     font-size: 0.72rem;
-    font-weight: 500;
-    background: rgba(77,150,255,0.12);
-    color: #93c5fd;
-    border: 1px solid rgba(77,150,255,0.25);
+    font-weight: 700;
 }
-
-/* ── Cost Pill ── */
 .cost-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 20px;
+    padding: 0.55rem 0.75rem;
+    border-radius: 3px;
+    background: #1c1718;
+    color: #f0d8db;
+    border: 1px solid #302628;
     font-size: 0.75rem;
     font-weight: 600;
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.65);
-    border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* ── AI Reasoning Block ── */
 .ai-reasoning {
-    background: rgba(77,150,255,0.07);
-    border-left: 3px solid #4d96ff;
-    border-radius: 0 10px 10px 0;
+    background: #070707;
+    border-left: 3px solid var(--z-red);
     padding: 0.8rem 1rem;
-    margin-top: 0.9rem;
-    color: rgba(255,255,255,0.78);
+    margin-top: 1.35rem;
+    color: #e5cfd2;
     font-size: 0.88rem;
     line-height: 1.65;
-    font-style: italic;
 }
-
-/* ── Summary Block ── */
-.summary-block {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1rem 1.4rem;
-    margin-bottom: 1.8rem;
-    color: rgba(255,255,255,0.6);
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-/* ── Search Button ── */
-.stButton > button {
-    width: 100%;
-    padding: 0.65rem 1rem;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-    color: white !important;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    letter-spacing: 0.02em;
-}
-.stButton > button:hover { opacity: 0.9; }
-
-/* ── Metric Cards ── */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-.stat-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    text-align: center;
-}
-.stat-card .stat-value {
-    font-size: 1.8rem;
+.ai-label {
+    color: var(--z-red);
+    font-size: 0.66rem;
+    font-style: normal;
     font-weight: 800;
-    background: linear-gradient(90deg, #ff6b6b, #4d96ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-.stat-card .stat-label {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-top: 0.2rem;
-}
-
-/* ── Input overrides ── */
-.stSelectbox > div > div,
-.stMultiSelect > div > div,
-.stTextInput > div > div > input {
-    background: rgba(255,255,255,0.06) !important;
-    border-color: rgba(255,255,255,0.12) !important;
-    color: white !important;
-}
-.stTextArea textarea {
-    background: rgba(255,255,255,0.06) !important;
-    border-color: rgba(255,255,255,0.12) !important;
-    color: rgba(255,255,255,0.9) !important;
+    margin-bottom: 0.6rem;
 }
 
 /* ── Skeleton Loader ── */
@@ -319,9 +324,9 @@ section[data-testid="stSidebar"] .stTextArea label {
     100% { background-position: 400px 0; }
 }
 .skeleton-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
+    background: var(--z-panel);
+    border: 1px solid var(--z-border);
+    border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.2rem;
     overflow: hidden;
@@ -347,7 +352,7 @@ section[data-testid="stSidebar"] .stTextArea label {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: rgba(255,255,255,0.55);
+    color: var(--z-muted);
     font-size: 0.9rem;
     margin-bottom: 1.2rem;
 }
@@ -355,132 +360,16 @@ section[data-testid="stSidebar"] .stTextArea label {
     width: 18px;
     height: 18px;
     border: 2px solid rgba(255,255,255,0.15);
-    border-top-color: #ff6b6b;
+    border-top-color: var(--z-red);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-</style>
-""", unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-:root {
-    --z-bg: #000000;
-    --z-panel: #111111;
-    --z-border: #252525;
-    --z-text: #f8f8f8;
-    --z-muted: #d7c0c3;
-    --z-red: #ef3348;
-}
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; letter-spacing: 0; }
-.stApp { background: var(--z-bg); color: var(--z-text); }
-.block-container { max-width: 1120px; padding: 1.35rem 2rem 3rem; }
-[data-testid="stAppViewContainer"] > .main { border-left: 1px solid #151515; }
-section[data-testid="stSidebar"] {
-    background: #050505;
-    border-right: 1px solid #171717;
-    min-width: 270px !important;
-    max-width: 270px !important;
-}
-section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1.25rem 2rem; }
-section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] .stMultiSelect label,
-section[data-testid="stSidebar"] .stSlider label,
-section[data-testid="stSidebar"] .stRadio label,
-section[data-testid="stSidebar"] .stTextArea label {
-    color: #cdb4b8 !important;
-    font-size: 0.64rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-.top-nav {
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #171717;
-    margin: -0.35rem 0 2.2rem;
-    padding-bottom: 0.85rem;
-}
-.brand { font-size: 1.05rem; font-weight: 800; color: #fff; }
-.brand span { color: var(--z-red); }
-.nav-links { display: flex; align-items: center; gap: 1.65rem; color: #ad9094; font-size: 0.78rem; font-weight: 700; }
-.nav-links .active { color: #fff; border-bottom: 2px solid var(--z-red); padding-bottom: 0.35rem; }
-.nav-icons { display: flex; gap: 1.5rem; color: #d9bdc1; font-size: 1rem; }
-.hero-header { text-align: center; padding: 0.2rem 1rem 2rem; }
-.hero-header h1 {
-    font-size: 2.6rem;
-    font-weight: 800;
-    color: #fff;
-    background: none;
-    -webkit-text-fill-color: #fff;
-    margin: 0;
-    line-height: 1.1;
-}
-.hero-header .hero-icon { color: var(--z-red); margin-right: 0.65rem; }
-.hero-header p { color: var(--z-muted); font-size: 1rem; margin: 0.95rem auto 0; max-width: 660px; line-height: 1.45; }
-.section-divider { background: #171717; }
-.stats-row { gap: 1.4rem; margin: 0.7rem 0 2.2rem; }
-.stat-card { background: var(--z-panel); border: 1px solid var(--z-border); border-radius: 8px; padding: 1.55rem 1.2rem; }
-.stat-card .stat-value { color: #fff; background: none; -webkit-text-fill-color: #fff; font-size: 2rem; }
-.stat-card .stat-label { color: var(--z-muted); font-size: 0.63rem; letter-spacing: 0.18em; }
-.status-banner,
-.summary-block { background: #151515; border: 1px solid var(--z-border); border-left: 4px solid var(--z-red); border-radius: 8px; color: #ead4d7; }
-.status-banner.relaxed { border-left-color: #37c871; color: #d0edda; }
-.summary-block { padding: 1.15rem 1.4rem; }
-.summary-block strong { color: #fff; display: block; margin-bottom: 0.35rem; }
-.stSelectbox > div > div,
-.stMultiSelect > div > div,
-.stTextInput > div > div > input,
-.stRadio div[role="radiogroup"] { background: #1d1d1d !important; border-color: #2b2b2b !important; border-radius: 3px !important; }
-.stMultiSelect [data-baseweb="tag"] { background: #2a1619 !important; border: 1px solid #6d2630 !important; }
-.stTextArea textarea { background: #1d1d1d !important; border-color: #2b2b2b !important; border-radius: 3px !important; color: #fff !important; }
-.stButton > button { min-height: 3rem; background: var(--z-red); border-radius: 3px; }
-.stSlider [data-testid="stTickBar"] { display: none; }
-.results-title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1rem 0 1.8rem; }
-.results-title h2 { color: #fff; font-size: 1.35rem; margin: 0; }
-.results-title span { color: var(--z-muted); font-size: 0.76rem; font-style: italic; }
-.rec-card { background: var(--z-panel); border: 1px solid var(--z-border); border-radius: 8px; margin-bottom: 1.55rem; overflow: hidden; position: relative; }
-.rec-card::before { display: none; }
-.rec-card:hover { border-color: #3b3b3b; transform: none; }
-.rec-feature { display: grid; grid-template-columns: minmax(230px, 34%) 1fr; }
-.food-visual {
-    min-height: 260px;
-    position: relative;
-    background:
-        radial-gradient(circle at 58% 58%, rgba(239,51,72,0.30), transparent 0 12%, transparent 13%),
-        radial-gradient(circle at 45% 62%, rgba(244,190,88,0.45), transparent 0 10%, transparent 11%),
-        radial-gradient(circle at 50% 58%, #111 0 28%, transparent 29%),
-        linear-gradient(135deg, #091014 0%, #173538 52%, #081012 100%);
-}
-.food-visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.58)); }
-.rec-body { padding: 1.85rem 1.9rem 1.7rem; }
-.rank-badge { width: 3.05rem; height: 2.45rem; border-radius: 4px; font-size: 1.2rem; background: var(--z-red); color: #fff; border: 1px solid rgba(255,255,255,0.12); position: absolute; left: 1rem; top: 1rem; z-index: 1; }
-.rank-2, .rank-3, .rank-other { background: #202727; color: #fff; }
-.card-name-row { align-items: flex-start; gap: 1rem; margin-bottom: 0.65rem; }
-.card-name { font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1.15; }
-.card-locality { color: var(--z-muted); margin-top: 0.45rem; }
-.rating-badge { padding: 0.55rem 0.75rem; border-radius: 0; background: #191919; color: #fff; border: 1px solid #363636; }
-.rating-high, .rating-mid, .rating-low { color: #fff; }
-.chips-row { gap: 0.55rem; margin: 1.05rem 0; }
-.chip { border-radius: 3px; background: #241c1d; color: #f2d9dc; border: 1px solid #3a2c2f; font-weight: 700; }
-.cost-pill { border-radius: 3px; background: #1c1718; color: #f0d8db; border: 1px solid #302628; padding: 0.55rem 0.75rem; }
-.ai-reasoning { background: #070707; border-left: 3px solid var(--z-red); border-radius: 0; color: #e5cfd2; margin-top: 1.35rem; }
-.ai-label { color: var(--z-red); font-size: 0.66rem; font-style: normal; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.6rem; }
-.compact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.35rem; margin-top: 1.75rem; }
-.rec-compact { padding: 1.65rem; min-height: 180px; }
-.rec-compact .rank-badge { position: static; width: 2.15rem; height: 2.15rem; font-size: 0.85rem; }
-.compact-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.4rem; }
-.compact-name { color: #fff; font-size: 1.05rem; font-weight: 800; margin-bottom: 0.65rem; }
-.compact-cuisine { color: var(--z-muted); font-size: 0.78rem; }
-.compact-link { color: var(--z-red); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; margin-top: 1.35rem; text-transform: uppercase; }
 @media (max-width: 900px) {
     .rec-feature { grid-template-columns: 1fr; }
     .food-visual { min-height: 190px; }
-    .stats-row, .compact-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
     .top-nav { align-items: flex-start; height: auto; gap: 1rem; }
     .nav-links { gap: 1rem; }
     .nav-icons { display: none; }
@@ -724,63 +613,59 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
+    # Initialize session state for the search data if it doesn't exist
+    if "search_data" not in st.session_state:
+        st.session_state.search_data = {
+            "location": "",
+            "cuisines": [],
+            "budget": "Any",
+            "min_rating": 4.0,
+            "user_query": "",
+            "search_clicked": False
+        }
+
+    # Declare the custom sidebar component pointing to the folder containing index.html
+    custom_sidebar = components.declare_component(
+        "zomato_sidebar", 
+        path=str(ROOT / "src" / "sidebar")
+    )
+
     # ── Sidebar: Search Controls ───────────────────────────────────────────────
     with st.sidebar:
         st.markdown("""
         <div style="text-align:center; padding: 1rem 0 0.5rem;">
-            <div style="font-size:1.35rem; color:#ef3348;">&#9881;</div>
-            <div style="font-size:1.35rem; font-weight:800; color:#fff; margin-top:0.55rem;">Search Preferences</div>
-            <div style="font-size:0.75rem; color:#d7c0c3; margin-top:0.2rem;">
-                Personalize your palate
+            <div style="font-size:1.35rem; color:#ef3348; font-family:'Plus Jakarta Sans', sans-serif;">⚙️</div>
+            <div style="font-size:1.35rem; font-weight:800; color:#fff; margin-top:0.55rem; font-family:'Plus Jakarta Sans', sans-serif;">Search Preferences</div>
+            <div style="font-size:0.75rem; color:#94A3B8; margin-top:0.2rem;">
+                Personalise your palate
             </div>
         </div>
         <hr style="border-color:#171717; margin: 1.35rem 0;">
         """, unsafe_allow_html=True)
 
-        # Location selector
-        location = st.selectbox(
-            "Location",
-            options=[""] + locations,
-            format_func=lambda x: "Select a neighbourhood..." if x == "" else x,
-            key="location_select",
+        # Call custom component
+        result = custom_sidebar(
+            locations=locations,
+            cuisines=cuisines_list,
+            default_values=st.session_state.search_data
         )
 
-        # Cuisines (multi-select)
-        selected_cuisines = st.multiselect(
-            "🍜 Cuisines",
-            options=cuisines_list,
-            placeholder="Any cuisine...",
-            key="cuisine_select"
-        )
+        # Update state if changed
+        if result:
+            st.session_state.search_data = result
 
-        # Budget
-        budget = st.radio(
-            "💰 Budget",
-            options=["Any", "Low", "Medium", "High"],
-            horizontal=True,
-            key="budget_radio"
-        )
-
-        # Min Rating
-        min_rating = st.slider(
-            "⭐ Minimum Rating",
-            min_value=2.0, max_value=5.0,
-            value=4.0, step=0.1,
-            key="rating_slider"
-        )
-
-        st.markdown("<hr style='border-color:rgba(255,255,255,0.08);'>", unsafe_allow_html=True)
-
-        # Qualitative Search
-        user_query = st.text_area(
-            "✨ What are you looking for?",
-            placeholder="e.g., A cozy rooftop place for a date night with great cocktails...",
-            height=110,
-            key="query_text"
-        )
-
-        st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
-        search_clicked = st.button("🚀 Find Restaurants", key="search_btn")
+    # Read values from session state
+    search_data = st.session_state.search_data
+    location = search_data.get("location", "")
+    selected_cuisines = search_data.get("cuisines", [])
+    budget = search_data.get("budget", "Any")
+    min_rating = float(search_data.get("min_rating", 4.0))
+    user_query = search_data.get("user_query", "")
+    
+    # Determine if search was clicked and consume it (reset to False to prevent loops on other page interactions)
+    search_clicked = search_data.get("search_clicked", False)
+    if search_clicked:
+        st.session_state.search_data["search_clicked"] = False
 
     # ── Main Panel: Results ────────────────────────────────────────────────────
     if not search_clicked:

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zomato AI Sidebar Preferences</title>
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ── Typography & Global Reset ── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            color: #F8FAFC;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            overflow: hidden;
+            padding: 2px;
+        }
+
+        h1, h2, h3, h4, .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        /* ── Sidebar Container ── */
+        #sidebar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* ── Typography and Labels ── */
+        .select-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94A3B8;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            user-select: none;
+        }
+
+        .field-icon {
+            width: 14px;
+            height: 14px;
+            stroke: #EF3348; /* Cohesive Zomato Red Accent */
+            stroke-width: 2.5;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        /* ── Trigger / Select Input Containers ── */
+        .custom-select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-trigger {
+            background: #121212;
+            border: 1px solid #252525;
+            border-radius: 6px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            min-height: 42px;
+            width: 100%;
+            transition: border-color 150ms ease, background-color 150ms ease;
+        }
+
+        .select-trigger:hover {
+            border-color: #3b3b3b;
+            background-color: #171717;
+        }
+
+        .select-trigger.open {
+            border-color: #EF3348;
+        }
+
+        .select-value {
+            font-size: 0.82rem;
+            color: #F8FAFC;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            padding-right: 40px; /* text truncation padding to avoid chevron collision */
+            flex: 1;
+            text-align: left;
+        }
+
+        .select-value.placeholder {
+            color: #64748B;
+        }
+
+        .chevron-icon {
+            width: 14px;
+            height: 14px;
+            stroke: #94A3B8;
+            stroke-width: 2.5;
+            fill: none;
+            transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .select-trigger.open .chevron-icon {
+            transform: rotate(180deg);
+            stroke: #EF3348;
+        }
+
+        /* ── Custom Dropdown Menu ── */
+        .select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #121212;
+            border: 1px solid #252525;
+            border-radius: 6px;
+            margin-top: 4px;
+            z-index: 1000;
+            max-height: 240px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+            
+            /* Hidden by default, prepared for transition */
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top;
+            pointer-events: none;
+            transition: transform 220ms cubic-bezier(0.7, 0, 0.84, 0), opacity 220ms cubic-bezier(0.7, 0, 0.84, 0);
+        }
+
+        .select-dropdown.open {
+            opacity: 1;
+            transform: scaleY(1);
+            pointer-events: auto;
+            transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Dropdown Search Input (No blinking cursor in trigger, only in search) */
+        .select-search-container {
+            padding: 8px 10px;
+            border-bottom: 1px solid #252525;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .select-search-icon {
+            width: 12px;
+            height: 12px;
+            stroke: #64748B;
+            stroke-width: 2.5;
+            fill: none;
+        }
+
+        .select-search {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #F8FAFC;
+            font-size: 0.8rem;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .select-search::placeholder {
+            color: #64748B;
+        }
+
+        .select-options {
+            overflow-y: auto;
+            flex: 1;
+            max-height: 190px;
+        }
+
+        /* Customize scrollbar */
+        .select-options::-webkit-scrollbar {
+            width: 6px;
+        }
+        .select-options::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .select-options::-webkit-scrollbar-thumb {
+            background: #252525;
+            border-radius: 3px;
+        }
+        .select-options::-webkit-scrollbar-thumb:hover {
+            background: #EF3348;
+        }
+
+        .select-option {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            color: #F8FAFC;
+            cursor: pointer;
+            transition: background 150ms ease, color 150ms ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .select-option:hover {
+            background: #1e1e1e;
+            color: #EF3348;
+        }
+
+        .select-option.selected {
+            background: rgba(239, 51, 72, 0.1);
+            color: #EF3348;
+            font-weight: 600;
+        }
+
+        .option-check {
+            width: 12px;
+            height: 12px;
+            stroke: #EF3348;
+            stroke-width: 3;
+            fill: none;
+            display: none;
+        }
+
+        .select-option.selected .option-check {
+            display: block;
+        }
+
+        /* ── Cuisine Chips ── */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            max-width: 90%;
+        }
+
+        .chip {
+            background: rgba(239, 51, 72, 0.08);
+            border: 1px solid rgba(239, 51, 72, 0.25);
+            color: #EF3348;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            user-select: none;
+        }
+
+        .chip-remove {
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #EF3348;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: background 150ms ease, color 150ms ease;
+        }
+
+        .chip-remove:hover {
+            background: #EF3348;
+            color: #FFFFFF;
+        }
+
+        /* ── Segmented Control / Button Group (Budget) ── */
+        .segmented-control {
+            display: flex;
+            background: #121212;
+            border: 1px solid #252525;
+            border-radius: 6px;
+            padding: 3px;
+            width: 100%;
+        }
+
+        .segment-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #94A3B8;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 8px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 200ms ease, color 200ms ease;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            user-select: none;
+        }
+
+        .segment-btn:hover:not(.active) {
+            color: #F8FAFC;
+        }
+
+        .segment-btn.active {
+            background: #EF3348;
+            color: #FFFFFF;
+        }
+
+        /* ── Custom Slider ── */
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-track-container {
+            padding: 4px 2px;
+        }
+
+        .custom-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px; /* Thin slider track line */
+            background: #252525;
+            border-radius: 2px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #EF3348;
+            cursor: pointer;
+            transition: transform 100ms ease;
+            border: none;
+        }
+
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        .custom-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #EF3348;
+            cursor: pointer;
+            transition: transform 100ms ease;
+            border: none;
+        }
+
+        .custom-slider::-moz-range-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        /* ── Custom Textarea ── */
+        .custom-textarea {
+            width: 100%;
+            height: 96px;
+            background: #121212;
+            border: 1px solid #252525;
+            border-radius: 6px;
+            color: #F8FAFC;
+            padding: 10px 12px;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            font-family: 'Inter', sans-serif;
+            resize: none; /* resize: none applied */
+            outline: none;
+            transition: border-color 150ms ease;
+        }
+
+        .custom-textarea:focus {
+            border-color: #EF3348;
+        }
+
+        .custom-textarea::placeholder {
+            color: #64748B; /* High-contrast accessible color */
+            font-size: 0.78rem;
+        }
+
+        /* ── Primary Search Button ── */
+        .search-submit-btn {
+            width: 100%;
+            background: #EF3348;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 150ms ease, opacity 150ms ease;
+            user-select: none;
+            margin-top: 4px;
+        }
+
+        .search-submit-btn:hover {
+            background: #D82C3E;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            stroke: #FFFFFF;
+            stroke-width: 2.5;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container">
+        
+        <!-- 1. Location Input -->
+        <div class="custom-select-container">
+            <div class="select-label">
+                <!-- Map Pin Icon -->
+                <svg class="field-icon" viewBox="0 0 24 24">
+                    <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>Location</span>
+            </div>
+            <div class="select-trigger" id="location-trigger">
+                <span class="select-value" id="location-value">Select a neighbourhood...</span>
+                <!-- Chevron Down -->
+                <svg class="chevron-icon" viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </div>
+            <div class="select-dropdown" id="location-dropdown">
+                <div class="select-search-container">
+                    <svg class="select-search-icon" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" class="select-search" id="location-search" placeholder="Search locations...">
+                </div>
+                <div class="select-options" id="location-options-list">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Cuisine Input (Multi-select) -->
+        <div class="custom-select-container">
+            <div class="select-label">
+                <!-- Utensils Icon -->
+                <svg class="field-icon" viewBox="0 0 24 24">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <span>Cuisines</span>
+            </div>
+            <div class="select-trigger" id="cuisine-trigger">
+                <div class="chips-container" id="cuisine-chips">
+                    <span class="select-placeholder" id="cuisine-placeholder">Any cuisine...</span>
+                </div>
+                <!-- Chevron Down -->
+                <svg class="chevron-icon" viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </div>
+            <div class="select-dropdown" id="cuisine-dropdown">
+                <div class="select-search-container">
+                    <svg class="select-search-icon" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" class="select-search" id="cuisine-search" placeholder="Search cuisines...">
+                </div>
+                <div class="select-options" id="cuisine-options-list">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Budget Control -->
+        <div class="budget-container">
+            <div class="select-label">
+                <!-- Dollar/Wallet Icon -->
+                <svg class="field-icon" viewBox="0 0 24 24">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <line x1="12" y1="4" x2="12" y2="20"/>
+                </svg>
+                <span>Budget</span>
+            </div>
+            <div class="segmented-control" id="budget-control">
+                <button type="button" class="segment-btn" data-value="Any">Any</button>
+                <button type="button" class="segment-btn" data-value="Low">Low</button>
+                <button type="button" class="segment-btn" data-value="Medium">Medium</button>
+                <button type="button" class="segment-btn" data-value="High">High</button>
+            </div>
+        </div>
+
+        <!-- 4. Minimum Rating Slider -->
+        <div class="rating-container">
+            <div class="slider-header">
+                <div class="select-label">
+                    <!-- Star Icon -->
+                    <svg class="field-icon" viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    <span id="rating-title">Minimum Rating: 4.0★</span>
+                </div>
+            </div>
+            <div class="slider-track-container">
+                <input type="range" id="rating-slider" min="2.0" max="5.0" step="0.1" value="4.0" class="custom-slider">
+            </div>
+        </div>
+
+        <!-- 5. Qualitative Prompt text area -->
+        <div class="query-container">
+            <div class="select-label">
+                <!-- Compass / Sparks Icon -->
+                <svg class="field-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+                <span>What are you looking for?</span>
+            </div>
+            <textarea id="query-textarea" class="custom-textarea" placeholder="e.g., A cozy rooftop place for a date night with great cocktails..."></textarea>
+        </div>
+
+        <!-- 6. Search Submit Button -->
+        <button type="button" id="search-btn" class="search-submit-btn">
+            <!-- Search Glass Icon -->
+            <svg class="btn-icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Find Restaurants
+        </button>
+        
+    </div>
+
+    <script>
+        // ── State Variables ──
+        let availableLocations = [];
+        let availableCuisines = [];
+        let selectedLocation = "";
+        let selectedCuisines = [];
+        let selectedBudget = "Any";
+        let selectedMinRating = 4.0;
+        let selectedUserQuery = "";
+        
+        let initialized = false;
+
+        // ── DOM References ──
+        const locationTrigger = document.getElementById("location-trigger");
+        const locationDropdown = document.getElementById("location-dropdown");
+        const locationValue = document.getElementById("location-value");
+        const locationSearchInput = document.getElementById("location-search");
+        const locationList = document.getElementById("location-options-list");
+
+        const cuisineTrigger = document.getElementById("cuisine-trigger");
+        const cuisineDropdown = document.getElementById("cuisine-dropdown");
+        const cuisineChips = document.getElementById("cuisine-chips");
+        const cuisinePlaceholder = document.getElementById("cuisine-placeholder");
+        const cuisineSearchInput = document.getElementById("cuisine-search");
+        const cuisineList = document.getElementById("cuisine-options-list");
+
+        const budgetButtons = document.querySelectorAll("#budget-control .segment-btn");
+        const ratingSlider = document.getElementById("rating-slider");
+        const ratingTitle = document.getElementById("rating-title");
+        const queryTextarea = document.getElementById("query-textarea");
+        const searchBtn = document.getElementById("search-btn");
+
+        // ── Helper: Inform Streamlit of Iframe Frame Height ──
+        function updateHeight() {
+            // Recalculate heights on frame changes (opening/closing dropdowns, chip changes)
+            setTimeout(() => {
+                const container = document.getElementById("sidebar-container");
+                const height = container.scrollHeight + 15;
+                window.parent.postMessage({
+                    isStreamlitMessage: true,
+                    type: "streamlit:setFrameHeight",
+                    height: height
+                }, "*");
+            }, 50); // slight delay to ensure browser layout is calculated
+        }
+
+        // ── Dropdown Controls ──
+        function closeAllDropdowns() {
+            locationTrigger.classList.remove("open");
+            locationDropdown.classList.remove("open");
+            cuisineTrigger.classList.remove("open");
+            cuisineDropdown.classList.remove("open");
+            updateHeight();
+        }
+
+        // Toggle Location
+        locationTrigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isOpen = locationDropdown.classList.contains("open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                locationTrigger.classList.add("open");
+                locationDropdown.classList.add("open");
+                locationSearchInput.focus();
+                updateHeight();
+            }
+        });
+
+        // Toggle Cuisine
+        cuisineTrigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isOpen = cuisineDropdown.classList.contains("open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                cuisineTrigger.classList.add("open");
+                cuisineDropdown.classList.add("open");
+                cuisineSearchInput.focus();
+                updateHeight();
+            }
+        });
+
+        // Close dropdowns on outside click
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".custom-select-container")) {
+                closeAllDropdowns();
+            }
+        });
+
+        // ── Autocomplete / Search Filters ──
+        locationSearchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const options = locationList.querySelectorAll(".select-option");
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                opt.style.display = text.includes(query) ? "flex" : "none";
+            });
+        });
+
+        cuisineSearchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const options = cuisineList.querySelectorAll(".select-option");
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                opt.style.display = text.includes(query) ? "flex" : "none";
+            });
+        });
+
+        // Prevent dropdown click propagation (e.g. typing in search field closing dropdown)
+        locationDropdown.addEventListener("click", (e) => e.stopPropagation());
+        cuisineDropdown.addEventListener("click", (e) => e.stopPropagation());
+
+        // ── Render Dropdown Lists ──
+        function renderLocations() {
+            locationList.innerHTML = "";
+            
+            // Add fallback empty item
+            const emptyOption = document.createElement("div");
+            emptyOption.className = "select-option" + (selectedLocation === "" ? " selected" : "");
+            emptyOption.textContent = "Select a neighbourhood...";
+            emptyOption.addEventListener("click", () => {
+                selectedLocation = "";
+                locationValue.textContent = "Select a neighbourhood...";
+                locationValue.classList.add("placeholder");
+                closeAllDropdowns();
+            });
+            locationList.appendChild(emptyOption);
+
+            availableLocations.forEach(loc => {
+                const option = document.createElement("div");
+                option.className = "select-option" + (selectedLocation === loc ? " selected" : "");
+                option.textContent = loc;
+                
+                // Add Checkmark Icon SVG
+                const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                check.setAttribute("class", "option-check");
+                check.setAttribute("viewBox", "0 0 24 24");
+                check.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+                option.appendChild(check);
+
+                option.addEventListener("click", () => {
+                    selectedLocation = loc;
+                    locationValue.textContent = loc;
+                    locationValue.classList.remove("placeholder");
+                    closeAllDropdowns();
+                });
+                locationList.appendChild(option);
+            });
+            
+            // Update trigger label on load
+            if (selectedLocation) {
+                locationValue.textContent = selectedLocation;
+                locationValue.classList.remove("placeholder");
+            } else {
+                locationValue.textContent = "Select a neighbourhood...";
+                locationValue.classList.add("placeholder");
+            }
+        }
+
+        function renderCuisines() {
+            cuisineList.innerHTML = "";
+            availableCuisines.forEach(c => {
+                const isSelected = selectedCuisines.includes(c);
+                const option = document.createElement("div");
+                option.className = "select-option" + (isSelected ? " selected" : "");
+                option.textContent = c;
+                
+                // Add Checkmark Icon SVG
+                const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                check.setAttribute("class", "option-check");
+                check.setAttribute("viewBox", "0 0 24 24");
+                check.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+                option.appendChild(check);
+
+                option.addEventListener("click", () => {
+                    if (selectedCuisines.includes(c)) {
+                        selectedCuisines = selectedCuisines.filter(item => item !== c);
+                    } else {
+                        selectedCuisines.push(c);
+                    }
+                    option.classList.toggle("selected");
+                    updateCuisineChips();
+                });
+                cuisineList.appendChild(option);
+            });
+            updateCuisineChips();
+        }
+
+        function updateCuisineChips() {
+            // Remove previous chips
+            const currentChips = cuisineChips.querySelectorAll(".chip");
+            currentChips.forEach(chip => chip.remove());
+
+            if (selectedCuisines.length === 0) {
+                cuisinePlaceholder.style.display = "block";
+            } else {
+                cuisinePlaceholder.style.display = "none";
+                selectedCuisines.forEach(c => {
+                    const chip = document.createElement("span");
+                    chip.className = "chip";
+                    chip.textContent = c;
+
+                    const removeBtn = document.createElement("span");
+                    removeBtn.className = "chip-remove";
+                    removeBtn.innerHTML = "&times;";
+                    removeBtn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        selectedCuisines = selectedCuisines.filter(item => item !== c);
+                        renderCuisines();
+                    });
+
+                    chip.appendChild(removeBtn);
+                    cuisineChips.appendChild(chip);
+                });
+            }
+            
+            // Highlight selected in options list
+            const options = cuisineList.querySelectorAll(".select-option");
+            options.forEach(opt => {
+                const name = opt.textContent;
+                if (selectedCuisines.includes(name)) {
+                    opt.classList.add("selected");
+                } else {
+                    opt.classList.remove("selected");
+                }
+            });
+            updateHeight();
+        }
+
+        // ── Budget Select ──
+        budgetButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                budgetButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                selectedBudget = btn.getAttribute("data-value");
+            });
+        });
+
+        function setBudgetUI(value) {
+            budgetButtons.forEach(b => {
+                if (b.getAttribute("data-value") === value) {
+                    b.classList.add("active");
+                } else {
+                    b.classList.remove("active");
+                }
+            });
+        }
+
+        // ── Rating Slider ──
+        ratingSlider.addEventListener("input", (e) => {
+            selectedMinRating = parseFloat(e.target.value);
+            ratingTitle.textContent = `Minimum Rating: ${selectedMinRating.toFixed(1)}★`;
+        });
+        
+        ratingSlider.addEventListener("change", () => {
+            // No action needed locally, values are sent on Search click
+        });
+
+        // ── Textarea ──
+        queryTextarea.addEventListener("change", (e) => {
+            selectedUserQuery = e.target.value;
+        });
+
+        // ── Submit Search ──
+        searchBtn.addEventListener("click", () => {
+            selectedUserQuery = queryTextarea.value;
+            sendValuesToStreamlit(true);
+        });
+
+        // ── Communicate with Python ──
+        function sendValuesToStreamlit(isSearchClicked) {
+            const data = {
+                location: selectedLocation,
+                cuisines: selectedCuisines,
+                budget: selectedBudget,
+                min_rating: selectedMinRating,
+                user_query: selectedUserQuery,
+                search_clicked: isSearchClicked
+            };
+            
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:setComponentValue",
+                value: data
+            }, "*");
+        }
+
+        // ── Listen for Streamlit updates (Python -> JS) ──
+        window.addEventListener("message", (event) => {
+            const msg = event.data;
+            if (msg.type === "streamlit:render") {
+                const args = msg.args;
+                
+                availableLocations = args.locations || [];
+                availableCuisines = args.cuisines || [];
+                
+                // Initialize default values (only once or when defaults change)
+                if (!initialized && args.default_values) {
+                    const defaults = args.default_values;
+                    selectedLocation = defaults.location || "";
+                    selectedCuisines = defaults.cuisines || [];
+                    selectedBudget = defaults.budget || "Any";
+                    selectedMinRating = defaults.min_rating !== undefined ? parseFloat(defaults.min_rating) : 4.0;
+                    selectedUserQuery = defaults.user_query || "";
+                    
+                    // Update DOM states
+                    ratingSlider.value = selectedMinRating;
+                    ratingTitle.textContent = `Minimum Rating: ${selectedMinRating.toFixed(1)}★`;
+                    setBudgetUI(selectedBudget);
+                    queryTextarea.value = selectedUserQuery;
+                    
+                    initialized = true;
+                }
+                
+                // Render lists
+                renderLocations();
+                renderCuisines();
+                
+                // Set ready height
+                updateHeight();
+            }
+        });
+
+        // Notify Streamlit that component is loaded & ready
+        window.parent.postMessage({
+            isStreamlitMessage: true,
+            type: "streamlit:componentReady",
+            apiVersion: 1
+        }, "*");
+        
+        // Final window load height setup
+        window.addEventListener("load", () => {
+            updateHeight();
+        });
+    </script>
+</body>
+</html>
