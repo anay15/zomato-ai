@@ -108,6 +108,36 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1rem 2rem; }
 section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
 
+/* ── Sidebar collapse / expand toggle button ── */
+button[data-testid="collapsedControl"],
+button[kind="header"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: #111111 !important;
+    border: 1px solid #252525 !important;
+    border-radius: 50% !important;
+    color: #F8FAFC !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: background 180ms ease, border-color 180ms ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+    z-index: 9999 !important;
+}
+button[data-testid="collapsedControl"]:hover,
+button[kind="header"]:hover {
+    background: #1a1a1a !important;
+    border-color: var(--z-red) !important;
+}
+button[data-testid="collapsedControl"] svg,
+button[kind="header"] svg {
+    fill: #F8FAFC !important;
+    stroke: #F8FAFC !important;
+}
+
 /* ── Streamlit Tabs → styled as nav ── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 0;
