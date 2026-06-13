@@ -108,45 +108,6 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1rem 2rem; }
 section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
 
-/* ── Sidebar toggle: always visible, themed ──────────────────────────────
-   Targets every selector Streamlit has ever used for the collapse/expand
-   chevron so it works regardless of the exact version deployed.           */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-section[data-testid="stSidebar"] button[kind="header"],
-.css-fblp2m, .css-1dp5vir,
-div[data-testid="stSidebarNav"] ~ div button {
-    display:      flex        !important;
-    visibility:   visible     !important;
-    opacity:      1           !important;
-    position:     fixed       !important;
-    top:          1rem        !important;
-    left:         0.5rem      !important;
-    z-index:      99999       !important;
-    width:        2.2rem      !important;
-    height:       2.2rem      !important;
-    background:   #1a1a1a    !important;
-    border:       1px solid #333 !important;
-    border-radius: 50%       !important;
-    cursor:       pointer     !important;
-    align-items:  center      !important;
-    justify-content: center  !important;
-    box-shadow:   0 2px 12px rgba(0,0,0,0.7) !important;
-    transition:   border-color 150ms ease, background 150ms ease !important;
-}
-[data-testid="collapsedControl"]:hover,
-[data-testid="stSidebarCollapseButton"]:hover,
-section[data-testid="stSidebar"] button[kind="header"]:hover {
-    background:   #252525    !important;
-    border-color: var(--z-red) !important;
-}
-[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapseButton"] svg,
-section[data-testid="stSidebar"] button[kind="header"] svg {
-    fill:   #F8FAFC !important;
-    stroke: #F8FAFC !important;
-    color:  #F8FAFC !important;
-}
 
 /* ── Streamlit Tabs → styled as nav ── */
 .stTabs [data-baseweb="tab-list"] {
@@ -436,6 +397,18 @@ div[data-testid="column"] button[kind="secondary"]:hover {
     .food-visual { min-height: 190px; }
     .stats-row { grid-template-columns: 1fr; }
     .hero-header h1 { font-size: 2rem; }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ── Hide the sidebar collapse button so it always stays open ─────────────────
+st.markdown("""
+<style>
+/* Hide every variant of Streamlit's sidebar collapse/expand toggle */
+button[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+section[data-testid="stSidebar"] button[kind="header"] {
+    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
