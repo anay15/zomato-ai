@@ -23,7 +23,8 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: visible; /* must be visible so absolutely-positioned dropdowns aren't clipped */
             padding: 2px;
         }
 
@@ -67,6 +68,13 @@
         .custom-select-container {
             position: relative;
             width: 100%;
+            /* default stacking order — below an active dropdown */
+            z-index: 1;
+        }
+
+        /* Elevate the container whose dropdown is open above all siblings */
+        .custom-select-container.dropdown-active {
+            z-index: 100;
         }
 
         .select-trigger {
@@ -139,20 +147,26 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
-            
-            /* Hidden by default, prepared for transition */
+            will-change: transform, opacity;
+
+            /* Fade-out: slow gentle dissolve downward */
             opacity: 0;
-            transform: scaleY(0);
+            transform: scaleY(0.92) translateY(-6px);
             transform-origin: top;
             pointer-events: none;
-            transition: transform 220ms cubic-bezier(0.7, 0, 0.84, 0), opacity 220ms cubic-bezier(0.7, 0, 0.84, 0);
+            transition:
+                transform 320ms cubic-bezier(0.4, 0, 1, 1),
+                opacity   320ms cubic-bezier(0.4, 0, 1, 1);
         }
 
         .select-dropdown.open {
             opacity: 1;
-            transform: scaleY(1);
+            transform: scaleY(1) translateY(0);
             pointer-events: auto;
-            transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+            /* Fast spring open */
+            transition:
+                transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity   180ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* Dropdown Search Input (No blinking cursor in trigger, only in search) */
@@ -398,7 +412,37 @@
             font-size: 0.78rem;
         }
 
+        /* ── Entrance animations ── */
+        @keyframes sidebarFadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        #sidebar-container > * {
+            animation: sidebarFadeUp 0.35s ease both;
+        }
+        #sidebar-container > *:nth-child(1) { animation-delay: 0.04s; }
+        #sidebar-container > *:nth-child(2) { animation-delay: 0.10s; }
+        #sidebar-container > *:nth-child(3) { animation-delay: 0.16s; }
+        #sidebar-container > *:nth-child(4) { animation-delay: 0.22s; }
+        #sidebar-container > *:nth-child(5) { animation-delay: 0.28s; }
+        #sidebar-container > *:nth-child(6) { animation-delay: 0.34s; }
+
+        /* ── Chip entrance ── */
+        @keyframes chipPop {
+            from { opacity: 0; transform: scale(0.75); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .chip {
+            animation: chipPop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
         /* ── Primary Search Button ── */
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,51,72,0); }
+            50%       { box-shadow: 0 0 0 6px rgba(239,51,72,0.18); }
+        }
+
         .search-submit-btn {
             width: 100%;
             background: #EF3348;
@@ -414,13 +458,22 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 150ms ease, opacity 150ms ease;
+            transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
             user-select: none;
             margin-top: 4px;
+            animation: btnPulse 2.4s ease-in-out infinite;
         }
 
         .search-submit-btn:hover {
             background: #D82C3E;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239,51,72,0.4);
+            animation: none;
+        }
+
+        .search-submit-btn:active {
+            transform: translateY(0px) scale(0.98);
+            box-shadow: none;
         }
 
         .btn-icon {
@@ -591,24 +644,41 @@
 
         // ── Helper: Inform Streamlit of Iframe Frame Height ──
         function updateHeight() {
-            // Recalculate heights on frame changes (opening/closing dropdowns, chip changes)
             setTimeout(() => {
                 const container = document.getElementById("sidebar-container");
-                const height = container.scrollHeight + 15;
+                let height = container.scrollHeight + 15;
+
+                // Absolutely-positioned dropdowns are excluded from scrollHeight,
+                // so measure the open one directly and extend the frame to fit it.
+                const openDropdown = document.querySelector('.select-dropdown.open');
+                if (openDropdown) {
+                    const dropRect = openDropdown.getBoundingClientRect();
+                    const conRect = container.getBoundingClientRect();
+                    const dropBottom = dropRect.bottom - conRect.top + 15;
+                    if (dropBottom > height) height = dropBottom;
+                }
+
                 window.parent.postMessage({
                     isStreamlitMessage: true,
                     type: "streamlit:setFrameHeight",
                     height: height
                 }, "*");
-            }, 50); // slight delay to ensure browser layout is calculated
+            }, 60);
         }
 
         // ── Dropdown Controls ──
+        const locationContainer = locationTrigger.closest(".custom-select-container");
+        const cuisineContainer  = cuisineTrigger.closest(".custom-select-container");
+
         function closeAllDropdowns() {
             locationTrigger.classList.remove("open");
             locationDropdown.classList.remove("open");
+            locationContainer.classList.remove("dropdown-active");
+
             cuisineTrigger.classList.remove("open");
             cuisineDropdown.classList.remove("open");
+            cuisineContainer.classList.remove("dropdown-active");
+
             updateHeight();
         }
 
@@ -620,6 +690,7 @@
             if (!isOpen) {
                 locationTrigger.classList.add("open");
                 locationDropdown.classList.add("open");
+                locationContainer.classList.add("dropdown-active");
                 locationSearchInput.focus();
                 updateHeight();
             }
@@ -633,6 +704,7 @@
             if (!isOpen) {
                 cuisineTrigger.classList.add("open");
                 cuisineDropdown.classList.add("open");
+                cuisineContainer.classList.add("dropdown-active");
                 cuisineSearchInput.focus();
                 updateHeight();
             }
@@ -820,20 +892,24 @@
         });
 
         // ── Submit Search ──
+        // Use Date.now() as a timestamp-nonce. Unlike a counter, it is always
+        // increasing even if the iframe reloads and resets JS state, so Python
+        // can reliably distinguish a fresh click from a stale cached value.
         searchBtn.addEventListener("click", () => {
             selectedUserQuery = queryTextarea.value;
-            sendValuesToStreamlit(true);
+            sendValuesToStreamlit(true, Date.now());
         });
 
         // ── Communicate with Python ──
-        function sendValuesToStreamlit(isSearchClicked) {
+        function sendValuesToStreamlit(isSearchClicked, nonce) {
             const data = {
                 location: selectedLocation,
                 cuisines: selectedCuisines,
                 budget: selectedBudget,
                 min_rating: selectedMinRating,
                 user_query: selectedUserQuery,
-                search_clicked: isSearchClicked
+                search_clicked: isSearchClicked,
+                search_nonce: nonce !== undefined ? nonce : 0
             };
             
             window.parent.postMessage({
