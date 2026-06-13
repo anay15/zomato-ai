@@ -100,13 +100,27 @@ h1, h2, h3, h4, h5, h6, .hero-header h1, .results-title h2, .brand {
 
 [data-testid="stAppViewContainer"] > .main { border-left: 1px solid #151515; }
 section[data-testid="stSidebar"] {
-    background: #050505;
-    border-right: 1px solid #171717;
+    background: #050505 !important;
+    border-right: 1px solid #171717 !important;
     min-width: 280px !important;
     max-width: 280px !important;
+    /* Force sidebar to always be visible — never slide off-screen */
+    transform: none !important;
+    margin-left: 0 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
 section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1rem 2rem; }
 section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
+
+/* Hide collapse button — sidebar is always open, no toggle needed */
+button[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+section[data-testid="stSidebar"] button[kind="header"] {
+    display: none !important;
+}
 
 
 /* ── Streamlit Tabs → styled as nav ── */
@@ -401,17 +415,6 @@ div[data-testid="column"] button[kind="secondary"]:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Hide the sidebar collapse button so it always stays open ─────────────────
-st.markdown("""
-<style>
-/* Hide every variant of Streamlit's sidebar collapse/expand toggle */
-button[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-section[data-testid="stSidebar"] button[kind="header"] {
-    display: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 
 # ── Cached Loaders ────────────────────────────────────────────────────────────
