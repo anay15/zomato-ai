@@ -108,34 +108,44 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] > div:first-child { padding: 1.35rem 1rem 2rem; }
 section[data-testid="stSidebar"] * { color: var(--z-text) !important; }
 
-/* ── Sidebar collapse / expand toggle button ── */
-button[data-testid="collapsedControl"],
-button[kind="header"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    background: #111111 !important;
-    border: 1px solid #252525 !important;
-    border-radius: 50% !important;
-    color: #F8FAFC !important;
-    width: 2rem !important;
-    height: 2rem !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: background 180ms ease, border-color 180ms ease !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
-    z-index: 9999 !important;
+/* ── Sidebar toggle: always visible, themed ──────────────────────────────
+   Targets every selector Streamlit has ever used for the collapse/expand
+   chevron so it works regardless of the exact version deployed.           */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+section[data-testid="stSidebar"] button[kind="header"],
+.css-fblp2m, .css-1dp5vir,
+div[data-testid="stSidebarNav"] ~ div button {
+    display:      flex        !important;
+    visibility:   visible     !important;
+    opacity:      1           !important;
+    position:     fixed       !important;
+    top:          1rem        !important;
+    left:         0.5rem      !important;
+    z-index:      99999       !important;
+    width:        2.2rem      !important;
+    height:       2.2rem      !important;
+    background:   #1a1a1a    !important;
+    border:       1px solid #333 !important;
+    border-radius: 50%       !important;
+    cursor:       pointer     !important;
+    align-items:  center      !important;
+    justify-content: center  !important;
+    box-shadow:   0 2px 12px rgba(0,0,0,0.7) !important;
+    transition:   border-color 150ms ease, background 150ms ease !important;
 }
-button[data-testid="collapsedControl"]:hover,
-button[kind="header"]:hover {
-    background: #1a1a1a !important;
+[data-testid="collapsedControl"]:hover,
+[data-testid="stSidebarCollapseButton"]:hover,
+section[data-testid="stSidebar"] button[kind="header"]:hover {
+    background:   #252525    !important;
     border-color: var(--z-red) !important;
 }
-button[data-testid="collapsedControl"] svg,
-button[kind="header"] svg {
-    fill: #F8FAFC !important;
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapseButton"] svg,
+section[data-testid="stSidebar"] button[kind="header"] svg {
+    fill:   #F8FAFC !important;
     stroke: #F8FAFC !important;
+    color:  #F8FAFC !important;
 }
 
 /* ── Streamlit Tabs → styled as nav ── */
